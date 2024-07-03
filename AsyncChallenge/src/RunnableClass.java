@@ -38,4 +38,6 @@ public class RunnableClass implements Runnable {
         String current = forecast.substring(338,342);
         return current;
     }
+
+
 }
