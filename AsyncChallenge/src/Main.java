@@ -1,14 +1,16 @@
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.LongStream;
 
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
-        // Part One - Threads exercises:
+        // Part One - Threads exercise:
         RunnableClass rc = new RunnableClass();
         Thread t = new Thread(rc);
 
@@ -18,7 +20,7 @@ public class Main {
         t.join();
         System.out.println("The thread has been completed.");
 
-        // Part Two - Executors exercises:
+        // Part Two - Executors exercise:
         ExecutorService executor = Executors.newFixedThreadPool(5);
 
         for(int i=0; i<5;i++){
@@ -30,6 +32,10 @@ public class Main {
         }
 
         executor.shutdown();
+
+        // Part 3 - Performance exercise:
+        System.out.println("Parrallel:" + countProbablePrimesParallel(90000));
+        System.out.println("Sequential:" + countProbablePrimesParallel(90000));
     }
 
     public static String getForecast(){
@@ -52,5 +58,24 @@ public class Main {
         String forecast = getForecast();
         String current = forecast.substring(338,342);
         return current;
+    }
+
+    static long countProbablePrimesParallel(long n) {
+        long count = LongStream.rangeClosed(2, n)
+                .mapToObj(BigInteger::valueOf)
+                .parallel() // request parallel processing
+                .filter((i) -> i.isProbablePrime(50))
+                .count();
+
+        return count;
+    }
+
+    static long countProbablePrimes(long n) {
+        long count = LongStream.rangeClosed(2, n)
+                .mapToObj(BigInteger::valueOf)
+                .filter((i) -> i.isProbablePrime(50))
+                .count();
+
+        return count;
     }
 }
